@@ -1,0 +1,42 @@
+[
+  {
+    "source": "Firewall",
+    "message": "[SSH Alert] Multiple failed SSH login attempts detected from IP 192.168.1.250 to server X on port 22."
+  },
+  {
+    "source": "Antivirus",
+    "message": "[Malware Alert] 'invoice_2025.pdf.exe' identified as Trojan.Generic on Host-22. Quarantined by antivirus."
+  },
+  {
+    "source": "Endpoint Protection",
+    "message": "[USB Alert] Unauthorized USB device connected to Host-34 at 3:04 AM. Device ID: WD12345."
+  },
+  {
+    "source": "Email Gateway",
+    "message": "[Phishing Alert] Suspicious email detected: Subject: 'Account Suspension Notice' sent to employee@company.com from login@secure-update.com"
+  },
+  {
+    "source": "Cloud Firewall",
+    "message": "[DDoS Alert] Spike in traffic from 50+ IPs targeting api.company.com. Potential DDoS attack."
+  },
+  {
+    "source": "SIEM",
+    "message": "[Insider Alert] User 'j.doe' downloaded 15GB of sensitive files from internal HR system at midnight."
+  },
+  {
+    "source": "Network Monitor",
+    "message": "[DNS Alert] Repeated DNS lookups to suspicious domain c2-control.io from internal host 10.10.20.55."
+  },
+  {
+    "source": "Cloud Scanner",
+    "message": "[Cloud Alert] S3 bucket 'backup-data-prod' is publicly accessible and contains sensitive files."
+  },
+  {
+    "source": "SIEM",
+    "message": "[Privilege Alert] User 'intern_kim' was granted administrator rights on Domain Controller at 2:42 AM."
+  },
+  {
+    "source": "IAM Provider",
+    "message": "[Login Alert] Unusual login from Brazil to CFO's account 'cfo@company.com' using a new device."
+  }
+]
