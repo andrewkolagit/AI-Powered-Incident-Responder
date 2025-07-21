@@ -1,0 +1,277 @@
+{
+  "name": "AI-Powered Incident Responder",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "incident-alert",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -752,
+        -80
+      ],
+      "id": "6d18c658-84db-4553-bdc6-05d99ea4c5d5",
+      "name": "Webhook - Listener",
+      "webhookId": "d9df318d-e90f-4082-b259-cd99d11a20ff"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=-Alert-\nSource: {{ $json.body.source }}\nMessage: {{ $json.body.message }}\n\nYou are a cybersecurity analyst. Based on the following security alert, return a the following details in the below format:\n\n{\n  \"subject\": \"[Insert a clear and professional subject line]\",\n  \"body\": \"[Insert a full incident response email body in plain text]\"\n  \"severity\": \"[Insert a number from 1-10, depending on the severity of issue]\"\n  \"source\": \"[Write source as the source from the Alert]\"\n}\n\nThe body should:\n- Start with \"Team,\"\n- Briefly describe the issue\n- Include a severity rating (1–10)\n- List 2 recommended actions\n- End with a closing line and a signature like \"Thanks, Incident Responder Bot\"\n\nAlso don't use '\\n' for the line breaks but use '<br>'.\nYou can Skip out the ending for now (eg. Thanks, Incident Responder Bot)\n\nHere is an exmpale of it should look:\n{\nSubject: 🚨 Incident Alert: Multiple Failed SSH Logins on Server X; Severity: 8/10\n\nBody:\nTeam,\n\nWe detected multiple failed SSH login attempts on server X originating from IP address 192.168.10.4. This activity is consistent with a potential brute-force attack and may indicate unauthorized access attempts.\n\nSeverity: 8/10\n\nRecommended Actions:\n- Block the IP address 192.168.10.4 at the firewall.\n- Review server X's SSH logs for successful logins from this IP.\n- Ensure multi-factor authentication (MFA) is enabled for SSH access.\n\nSeverity: 8\n\nSource: Firewall\n}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -480,
+        -80
+      ],
+      "id": "458895ac-8d83-4c43-a7dc-24497f73fb8c",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        160
+      ],
+      "id": "d4d8e784-8b79-4a87-a2dd-d1f56fe33e71",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YQyWNxMJA6HQDyzg",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Step 1: Get the raw text block safely\nconst raw = $input.first().json.text;  // This assumes the LLM output is under the key 'text'\n\nif (!raw || typeof raw !== \"string\") {\n  throw new Error(\"Expected 'text' field with a JSON string in Markdown format.\");\n}\n\n// Step 2: Remove Markdown code block formatting\nconst cleaned = raw.replace(/^```json\\n/, '').replace(/\\n```$/, '').trim();\n\n// Step 3: Parse the cleaned JSON string\nlet parsed;\ntry {\n  parsed = JSON.parse(cleaned);\n} catch (e) {\n  throw new Error(\"Failed to parse cleaned JSON: \" + e.message);\n}\n\n// Step 4: Return usable fields\nreturn [{\n  subject: parsed.subject,\n  body: parsed.body,\n  severity: parsed.severity,\n  source: parsed.source\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        -80
+      ],
+      "id": "bef308a2-e241-4a34-b5be-d52f02331767",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "sendTo": "andrewkola2000@gmail.com",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        496,
+        -80
+      ],
+      "id": "cba09e00-7fa6-4993-9195-f8c499478370",
+      "name": "Send a message",
+      "webhookId": "46b6bbd4-30ed-4d15-8e0c-c3879e78b5fe",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "tnJWbU7Vg9ERfoR5",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1FF2DxDrcuMqQQPx5XUMuxPrbA0ycrv7rYi-A2a_gKis",
+          "mode": "list",
+          "cachedResultName": "Incident Report Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FF2DxDrcuMqQQPx5XUMuxPrbA0ycrv7rYi-A2a_gKis/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FF2DxDrcuMqQQPx5XUMuxPrbA0ycrv7rYi-A2a_gKis/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Source": "={{ $json.source }}",
+            "Body": "={{ $json.body }}",
+            "Subject": "={{ $json.subject }}",
+            "Severity": "={{ $json.severity }}",
+            "Timestamp": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Subject",
+              "displayName": "Subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Body",
+              "displayName": "Body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Severity",
+              "displayName": "Severity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        240,
+        80
+      ],
+      "id": "4fdd45ed-9b7e-4db3-8880-807b0f38ea9b",
+      "name": "Log in Incident Report Logs",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3nWI5ORtdZsOmrQA",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const { source, subject, body, severity } = $json;\n\n// Dynamic severity color and emoji\nlet severityColor = \"#28a745\"; // green\nlet severityEmoji = \"🟢\";\n\nif (severity >= 7) {\n  severityColor = \"#dc3545\"; // red\n  severityEmoji = \"🔴\";\n} else if (severity >= 4) {\n  severityColor = \"#fd7e14\"; // orange\n  severityEmoji = \"🟠\";\n}\n\n// Updated HTML email\nconst htmlBody = `\n  <div style=\"font-family: Arial, sans-serif; font-size: 16px; padding: 18px; background-color: #f8f9fa; color: #212529;\">\n    <h2 style=\"color: #004085;\"> ${subject}</h2>\n\n    <p><strong>📡 Source:</strong> <span style=\"color: #004085;\">${source}</span></p>\n    <p><strong>${severityEmoji} Severity:</strong> \n      <span style=\"color: ${severityColor}; font-weight: bold;\">${severity}/10</span>\n    </p>\n\n    <hr style=\"border: 1px solid #ccc;\">\n\n    <div style=\"line-height: 1.8;\">\n      ${body.replace(/\\n/g, \"<br>\")}\n    </div>\n\n    <br>\n    <p style=\"color: #6c757d;\">Best regards,<br>\n    🤖 <strong>Incident Responder Bot</strong></p>\n  </div>\n`;\n\nreturn [{\n  subject: subject,\n  body: htmlBody\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        -80
+      ],
+      "id": "faaff3ff-d438-4bb4-9fd2-123cefb720b5",
+      "name": "Code1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook - Listener": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Log in Incident Report Logs",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e382dda8-9012-4f19-8886-45ada0c204c8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6ee7e8f0fba8f2d0725111e46e96eea91c41b7df4c682d10fd9318b11e2ef1ee"
+  },
+  "id": "TKm3HXpkHTWH3f2s",
+  "tags": []
+}
