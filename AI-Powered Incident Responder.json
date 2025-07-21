@@ -66,7 +66,7 @@
     },
     {
       "parameters": {
-        "sendTo": "andrewkola2000@gmail.com",
+        "sendTo": "",
         "subject": "={{ $json.subject }}",
         "message": "={{ $json.body }}",
         "options": {}
@@ -95,14 +95,14 @@
           "value": "1FF2DxDrcuMqQQPx5XUMuxPrbA0ycrv7rYi-A2a_gKis",
           "mode": "list",
           "cachedResultName": "Incident Report Logs",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FF2DxDrcuMqQQPx5XUMuxPrbA0ycrv7rYi-A2a_gKis/edit?usp=drivesdk"
+          "cachedResultUrl": ""
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
           "mode": "list",
           "cachedResultName": "Sheet1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FF2DxDrcuMqQQPx5XUMuxPrbA0ycrv7rYi-A2a_gKis/edit#gid=0"
+          "cachedResultUrl": ""
         },
         "columns": {
           "mappingMode": "defineBelow",
