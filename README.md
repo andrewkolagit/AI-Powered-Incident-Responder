@@ -1,6 +1,8 @@
 # 🛡️ AI-Powered Incident Responder with n8n & Gemini
 > Automate incident triage, email reporting, and logging using Google Gemini, Gmail, and Google Sheets — all powered by n8n.
 
+<img width="1484" height="547" alt="image" src="https://github.com/user-attachments/assets/faa5f7f7-26f5-42e2-9212-03da60a003a3" />
+
 ## 📌 Project Overview
 This project builds an automated cybersecurity incident responder using:
 * 🧠 Gemini (Google LLM) for incident summarization, severity scoring, and generating email responses.
